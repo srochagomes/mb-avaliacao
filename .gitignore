@@ -1,0 +1,72 @@
+# Spec e assistência local de IA (não fazem parte da entrega)
+/spec/
+.cursor/
+
+# --- Go (back-end) ---
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+bin/
+dist/
+
+# Go workspace / module cache (local)
+vendor/
+
+# Coverage / profiling
+*.coverprofile
+coverage.out
+coverage.html
+*.prof
+cpu.out
+mem.out
+
+# IDE / OS (Go tooling)
+*.swp
+*.swo
+*~
+
+# --- Next.js (front-end) ---
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# Next.js build
+.next/
+out/
+build/
+dist/
+
+# Debug / logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Env files
+.env
+.env*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# TypeScript / tooling
+*.tsbuildinfo
+next-env.d.ts
+
+# Vercel
+.vercel
+
+# Testing / coverage
+coverage/
+
+# Misc
+.DS_Store
+*.pem
+Thumbs.db
