@@ -41,6 +41,27 @@ func (b *Book) Add(o Order) error {
 	return ErrInvalidAmount
 }
 
+func (b *Book) Remove(id string) (Order, error) {
+    if o, rest, ok := take(b.bids, id); ok {
+        b.bids = rest
+        return o, nil
+    }
+    if o, rest, ok := take(b.asks, id); ok {
+        b.asks = rest
+        return o, nil
+    }
+    return Order{}, ErrOrderNotOpen
+}
+
+func take(orders []Order, id string) (Order, []Order, bool) {
+    for i, o := range orders {
+        if o.ID == id {
+            return o, slices.Delete(orders, i, i+1), true
+        }
+    }
+    return Order{}, orders, false
+}
+
 func bidBefore(a, b Order) bool {
 	cmp := a.Price.Cmp(b.Price)
 	if cmp != 0 {
