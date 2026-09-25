@@ -6,29 +6,29 @@ import (
 )
 
 func TestMatch(t *testing.T) {
-    at := time.Date(2026, 9, 25, 12, 0, 0, 0, time.UTC)
+	at := time.Date(2026, 9, 25, 12, 0, 0, 0, time.UTC)
 
-    t.Run("full", func(t *testing.T) {
-        book := NewBook("BTC-BRL")
-        maker := openOrder(t, "maker", SideSell, "500000", at)
-        maker.AccountID = "B"
-        if err := book.Add(maker); err != nil {
-            t.Fatal(err)
-        }
-        taker := openOrder(t, "taker", SideBuy, "500000", at.Add(time.Second))
-        taker.AccountID = "A"
+	t.Run("full", func(t *testing.T) {
+		book := NewBook("BTC-BRL")
+		maker := openOrder(t, "maker", SideSell, "500000", at)
+		maker.AccountID = "B"
+		if err := book.Add(maker); err != nil {
+			t.Fatal(err)
+		}
+		taker := openOrder(t, "taker", SideBuy, "500000", at.Add(time.Second))
+		taker.AccountID = "A"
 
-        trades, got, err := book.Match(taker)
-        if err != nil {
-            t.Fatal(err)
-        }
-        if len(trades) != 1 || trades[0].Price.String() != "500000" || trades[0].MakerOrderID != "maker" {
-            t.Fatalf("trades %+v", trades)
-        }
-        if got.Status != StatusFilled || len(book.Bids()) != 0 || len(book.Asks()) != 0 {
-            t.Fatalf("status %s bids %d asks %d", got.Status, len(book.Bids()), len(book.Asks()))
-        }
-    })
+		trades, got, err := book.Match(taker)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(trades) != 1 || trades[0].Price.String() != "500000" || trades[0].MakerOrderID != "maker" {
+			t.Fatalf("trades %+v", trades)
+		}
+		if got.Status != StatusFilled || len(book.Bids()) != 0 || len(book.Asks()) != 0 {
+			t.Fatalf("status %s bids %d asks %d", got.Status, len(book.Bids()), len(book.Asks()))
+		}
+	})
 
 	t.Run("partial", func(t *testing.T) {
 		book := NewBook("BTC-BRL")
@@ -41,7 +41,7 @@ func TestMatch(t *testing.T) {
 		taker.AccountID = "A"
 		taker.OriginalQuantity = mustAmount(t, "2")
 		taker.RemainingQuantity = mustAmount(t, "2")
-	
+
 		trades, got, err := book.Match(taker)
 		if err != nil {
 			t.Fatal(err)
@@ -53,7 +53,7 @@ func TestMatch(t *testing.T) {
 			t.Fatalf("status %s rem %s bids %d asks %d", got.Status, got.RemainingQuantity, len(book.Bids()), len(book.Asks()))
 		}
 	})
-	
+
 	t.Run("maker price", func(t *testing.T) {
 		book := NewBook("BTC-BRL")
 		maker := openOrder(t, "maker", SideSell, "500000", at)
@@ -63,7 +63,7 @@ func TestMatch(t *testing.T) {
 		}
 		taker := openOrder(t, "taker", SideBuy, "510000", at.Add(time.Second))
 		taker.AccountID = "A"
-	
+
 		trades, _, err := book.Match(taker)
 		if err != nil {
 			t.Fatal(err)
@@ -72,7 +72,7 @@ func TestMatch(t *testing.T) {
 			t.Fatalf("trades %+v", trades)
 		}
 	})
-	
+
 	t.Run("no cross", func(t *testing.T) {
 		book := NewBook("BTC-BRL")
 		maker := openOrder(t, "maker", SideSell, "101", at)
@@ -82,7 +82,7 @@ func TestMatch(t *testing.T) {
 		}
 		taker := openOrder(t, "taker", SideBuy, "100", at.Add(time.Second))
 		taker.AccountID = "A"
-	
+
 		trades, got, err := book.Match(taker)
 		if err != nil {
 			t.Fatal(err)
@@ -91,7 +91,7 @@ func TestMatch(t *testing.T) {
 			t.Fatalf("trades %d status %s bids %d", len(trades), got.Status, len(book.Bids()))
 		}
 	})
-	
+
 	t.Run("self trade", func(t *testing.T) {
 		book := NewBook("BTC-BRL")
 		maker := openOrder(t, "maker", SideSell, "100", at)
@@ -101,7 +101,7 @@ func TestMatch(t *testing.T) {
 		}
 		taker := openOrder(t, "taker", SideBuy, "100", at.Add(time.Second))
 		taker.AccountID = "A"
-	
+
 		trades, _, err := book.Match(taker)
 		if err != nil {
 			t.Fatal(err)
@@ -110,7 +110,7 @@ func TestMatch(t *testing.T) {
 			t.Fatalf("trades %d bids %d asks %d", len(trades), len(book.Bids()), len(book.Asks()))
 		}
 	})
-	
+
 	t.Run("fifo", func(t *testing.T) {
 		book := NewBook("BTC-BRL")
 		late := openOrder(t, "late", SideSell, "100", at.Add(time.Second))
@@ -125,7 +125,7 @@ func TestMatch(t *testing.T) {
 		}
 		taker := openOrder(t, "taker", SideBuy, "100", at.Add(2*time.Second))
 		taker.AccountID = "A"
-	
+
 		trades, _, err := book.Match(taker)
 		if err != nil {
 			t.Fatal(err)

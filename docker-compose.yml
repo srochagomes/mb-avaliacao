@@ -1,0 +1,32 @@
+services:
+  api:
+    build: ./back-end
+    ports:
+      - "8081:8081"
+    environment:
+      PORT: "8081"
+    networks:
+      - clob
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8081/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 5s
+
+  web:
+    build: ./front-end
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: "3001"
+      API_URL: http://api:8081
+    networks:
+      - clob
+    depends_on:
+      api:
+        condition: service_healthy
+
+networks:
+  clob:
+    driver: bridge

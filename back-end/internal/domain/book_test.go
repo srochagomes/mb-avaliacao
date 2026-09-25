@@ -64,40 +64,39 @@ func TestBook(t *testing.T) {
 	}
 }
 
-
 func TestRemove(t *testing.T) {
-    at := time.Date(2026, 9, 25, 12, 0, 0, 0, time.UTC)
-    book := NewBook("BTC-BRL")
-    o := openOrder(t, "bid", SideBuy, "40", at)
-    o.AccountID = "A"
-    if err := book.Add(o); err != nil {
-        t.Fatal(err)
-    }
+	at := time.Date(2026, 9, 25, 12, 0, 0, 0, time.UTC)
+	book := NewBook("BTC-BRL")
+	o := openOrder(t, "bid", SideBuy, "40", at)
+	o.AccountID = "A"
+	if err := book.Add(o); err != nil {
+		t.Fatal(err)
+	}
 
-    bal := NewBalance("A", AssetBRL)
-    if err := bal.Credit(mustAmount(t, "100")); err != nil {
-        t.Fatal(err)
-    }
-    if err := ReserveForOrder(&bal, o); err != nil {
-        t.Fatal(err)
-    }
+	bal := NewBalance("A", AssetBRL)
+	if err := bal.Credit(mustAmount(t, "100")); err != nil {
+		t.Fatal(err)
+	}
+	if err := ReserveForOrder(&bal, o); err != nil {
+		t.Fatal(err)
+	}
 
-    got, err := book.Remove("bid")
-    if err != nil {
-        t.Fatal(err)
-    }
-    if err := ReleaseForOrder(&bal, got); err != nil {
-        t.Fatal(err)
-    }
-    got.Status = StatusCanceled
+	got, err := book.Remove("bid")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := ReleaseForOrder(&bal, got); err != nil {
+		t.Fatal(err)
+	}
+	got.Status = StatusCanceled
 
-    if got.Status != StatusCanceled || len(book.Bids()) != 0 {
-        t.Fatalf("status %s bids %d", got.Status, len(book.Bids()))
-    }
-    if bal.Available().String() != "100" || bal.Reserved().String() != "0" {
-        t.Fatalf("available %s reserved %s", bal.Available(), bal.Reserved())
-    }
-    if _, err := book.Remove("bid"); !errors.Is(err, ErrOrderNotOpen) {
-        t.Fatalf("missing: %v", err)
-    }
+	if got.Status != StatusCanceled || len(book.Bids()) != 0 {
+		t.Fatalf("status %s bids %d", got.Status, len(book.Bids()))
+	}
+	if bal.Available().String() != "100" || bal.Reserved().String() != "0" {
+		t.Fatalf("available %s reserved %s", bal.Available(), bal.Reserved())
+	}
+	if _, err := book.Remove("bid"); !errors.Is(err, ErrOrderNotOpen) {
+		t.Fatalf("missing: %v", err)
+	}
 }

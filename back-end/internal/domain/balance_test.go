@@ -41,14 +41,14 @@ func TestBalance(t *testing.T) {
 	if b.Reserved().String() != "40" {
 		t.Fatalf("reserved %s", b.Reserved())
 	}
-	
+
 	if err := b.Release(mustAmount(t, "40")); err != nil {
 		t.Fatal(err)
 	}
 	if b.Available().String() != "40" || b.Reserved().String() != "0" {
 		t.Fatalf("available %s reserved %s", b.Available(), b.Reserved())
 	}
-	
+
 	other := NewBalance("acc-2", AssetBTC)
 	if err := other.Credit(mustAmount(t, "50")); err != nil {
 		t.Fatal(err)
@@ -62,7 +62,7 @@ func TestBalance(t *testing.T) {
 	if other.Available().String() != "0" || other.Reserved().String() != "30" {
 		t.Fatalf("available %s reserved %s", other.Available(), other.Reserved())
 	}
-	
+
 	if err := b.Credit(mustAmount(t, "0")); !errors.Is(err, ErrInvalidAmount) {
 		t.Fatalf("credit zero: %v", err)
 	}
@@ -70,4 +70,3 @@ func TestBalance(t *testing.T) {
 		t.Fatalf("credit negative: %v", err)
 	}
 }
-

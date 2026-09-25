@@ -12,15 +12,16 @@ func TestParseAmount(t *testing.T) {
 		{"0.00000001", "0.00000001"},
 	}
 	for _, tt := range tests {
-		t.Run(tt.in, func(t *testing.T) { 
-			/* Parse + String */ 
+		t.Run(tt.in, func(t *testing.T) {
+			/* Parse + String */
 			got, err := ParseAmount(tt.in)
 			if err != nil {
 				t.Fatal(err)
 			}
 			if got.String() != tt.want {
 				t.Fatalf("got %q want %q", got.String(), tt.want)
-			}})
+			}
+		})
 	}
 }
 

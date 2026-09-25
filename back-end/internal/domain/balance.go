@@ -8,6 +8,7 @@ var (
 )
 
 type Asset string
+
 const (
 	AssetBTC Asset = "BTC"
 	AssetBRL Asset = "BRL"
@@ -19,14 +20,21 @@ type Balance struct {
 	available Amount
 	reserved  Amount
 }
+
 func NewBalance(accountID string, asset Asset) Balance {
 	return Balance{AccountID: accountID, Asset: asset}
 }
 func (b Balance) Available() Amount { return b.available }
 func (b Balance) Reserved() Amount  { return b.reserved }
 
-
-
+func (b Balance) Clone() Balance {
+	return Balance{
+		AccountID: b.AccountID,
+		Asset:     b.Asset,
+		available: b.available.Clone(),
+		reserved:  b.reserved.Clone(),
+	}
+}
 
 func (b *Balance) Credit(amount Amount) error {
 	if amount.Cmp(Amount{}) <= 0 {

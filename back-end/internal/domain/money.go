@@ -83,3 +83,10 @@ func (a Amount) Cmp(b Amount) int {
 func (a Amount) IsZero() bool {
 	return a.units == nil || a.units.Sign() == 0
 }
+
+func (a Amount) Clone() Amount {
+	if a.units == nil || a.units.Sign() == 0 {
+		return Amount{}
+	}
+	return Amount{units: new(big.Int).Set(a.units)}
+}

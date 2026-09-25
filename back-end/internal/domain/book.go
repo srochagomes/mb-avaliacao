@@ -20,8 +20,27 @@ func NewBook(instrument string) Book {
 	return Book{Instrument: instrument}
 }
 
-func (b Book) Bids() []Order { return slices.Clone(b.bids) }
-func (b Book) Asks() []Order { return slices.Clone(b.asks) }
+func (b Book) Bids() []Order { return cloneOrders(b.bids) }
+func (b Book) Asks() []Order { return cloneOrders(b.asks) }
+
+func (b Book) Clone() Book {
+	return Book{
+		Instrument: b.Instrument,
+		bids:       cloneOrders(b.bids),
+		asks:       cloneOrders(b.asks),
+	}
+}
+
+func cloneOrders(in []Order) []Order {
+	if len(in) == 0 {
+		return nil
+	}
+	out := make([]Order, len(in))
+	for i := range in {
+		out[i] = in[i].Clone()
+	}
+	return out
+}
 
 func (b *Book) Add(o Order) error {
 	if o.Instrument != b.Instrument {
@@ -42,24 +61,24 @@ func (b *Book) Add(o Order) error {
 }
 
 func (b *Book) Remove(id string) (Order, error) {
-    if o, rest, ok := take(b.bids, id); ok {
-        b.bids = rest
-        return o, nil
-    }
-    if o, rest, ok := take(b.asks, id); ok {
-        b.asks = rest
-        return o, nil
-    }
-    return Order{}, ErrOrderNotOpen
+	if o, rest, ok := take(b.bids, id); ok {
+		b.bids = rest
+		return o, nil
+	}
+	if o, rest, ok := take(b.asks, id); ok {
+		b.asks = rest
+		return o, nil
+	}
+	return Order{}, ErrOrderNotOpen
 }
 
 func take(orders []Order, id string) (Order, []Order, bool) {
-    for i, o := range orders {
-        if o.ID == id {
-            return o, slices.Delete(orders, i, i+1), true
-        }
-    }
-    return Order{}, orders, false
+	for i, o := range orders {
+		if o.ID == id {
+			return o, slices.Delete(orders, i, i+1), true
+		}
+	}
+	return Order{}, orders, false
 }
 
 func bidBefore(a, b Order) bool {

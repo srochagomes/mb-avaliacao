@@ -32,3 +32,10 @@ type Order struct {
 func (o Order) IsOpen() bool {
 	return o.Status == StatusOpen && !o.RemainingQuantity.IsZero()
 }
+
+func (o Order) Clone() Order {
+	o.Price = o.Price.Clone()
+	o.OriginalQuantity = o.OriginalQuantity.Clone()
+	o.RemainingQuantity = o.RemainingQuantity.Clone()
+	return o
+}
