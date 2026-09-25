@@ -50,12 +50,19 @@ func (a Amount) MulDiv(b Amount) Amount {
 	return Amount{units: prod}
 }
 
+func unitsOrZero(a Amount) *big.Int {
+	if a.units == nil {
+		return new(big.Int)
+	}
+	return a.units
+}
+
 func (a Amount) Add(b Amount) Amount {
-	return Amount{units: new(big.Int).Add(a.units, b.units)}
+	return Amount{units: new(big.Int).Add(unitsOrZero(a), unitsOrZero(b))}
 }
 
 func (a Amount) Sub(b Amount) (Amount, error) {
-	diff := new(big.Int).Sub(a.units, b.units)
+	diff := new(big.Int).Sub(unitsOrZero(a), unitsOrZero(b))
 	if diff.Sign() < 0 {
 		return Amount{}, fmt.Errorf("insufficient amount")
 	}
@@ -63,7 +70,14 @@ func (a Amount) Sub(b Amount) (Amount, error) {
 }
 
 func (a Amount) Cmp(b Amount) int {
-	return a.units.Cmp(b.units)
+	au, bu := a.units, b.units
+	if au == nil {
+		au = new(big.Int)
+	}
+	if bu == nil {
+		bu = new(big.Int)
+	}
+	return au.Cmp(bu)
 }
 
 func (a Amount) IsZero() bool {
