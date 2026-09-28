@@ -1,7 +1,3 @@
-# Spec e assistência local de IA (não fazem parte da entrega)
-/spec/
-.cursor/
-
 # --- Go (back-end) ---
 # Binaries
 *.exe
